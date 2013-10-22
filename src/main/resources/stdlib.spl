@@ -1,0 +1,150 @@
+
+(def not
+  (fn [x]
+    (if x false true)))
+
+(def id
+  (fn [x] x))
+
+(def inc
+  (fn [x] (+ x 1)))
+
+(def dec
+  (fn [x] (- x 1)))
+
+(def neg
+  (fn [x] (* x -1)))
+
+(def flip
+  (fn [f]
+    (fn [arg1 arg2] (f arg2 arg1))))
+
+(def curry
+  (fn [f x]
+    (fn [y]
+      (apply f '(x y)))))
+
+(def compose
+  (fn [f g]
+    (fn [x]
+      (f (g x)))))
+
+(def zero?
+  (curry = 0))
+
+(def positive?
+  (curry < 0))
+
+(def negative?
+  (curry > 0))
+
+(def odd?
+  (fn [x]
+    (= (rem x 2) 1)))
+
+(def even?
+  (fn [x]
+    (= (rem x 2) 0)))
+
+(def map
+  (fn [f xs]
+    (if (empty? xs) '()
+      (cons (f (head xs)) (map f (tail xs))))))
+
+(def filter
+  (fn [p xs]
+    (if (empty? xs) '()
+      (let [x (head xs)
+            rest (filter p (tail xs))]
+        (if (p x) (cons x rest)
+          rest)))))
+
+(def foldl
+  (fn [f acc xs]
+    (if (empty? xs) acc
+      (foldl f (f acc (head xs)) (tail xs)))))
+
+(def foldr
+  (fn [f z xs]
+    (if (empty? xs) z
+      (f (head xs) (foldr f z (tail xs))))))
+
+(def take
+  (fn [n xs]
+    (if (or (= n 0) (empty? xs)) '()
+      (cons (head xs) (take (dec n) (tail xs))))))
+
+(def drop
+  (fn [n xs]
+    (if (or (empty? xs) (= n 0)) xs
+      (drop (dec n) (tail xs)))))
+
+(def iterate
+  (fn [f n i]
+    (if (= n 0) '()
+      (cons i (iterate f (dec n) (f i))))))
+
+(def sum
+  (fn [xs]
+    (foldl + 0 xs)))
+
+(def product
+  (fn [xs]
+    (foldl * 1 xs)))
+
+(def min
+  (fn [xs]
+    (foldl (fn [a x] (if (> a x) x a)) (head xs) (tail xs))))
+
+(def max
+  (fn [xs]
+    (foldl (fn [a x] (if (< a x) x a)) (head xs) (tail xs))))
+
+(def reverse
+  (fn [xs]
+    (foldl (flip cons) '() xs)))
+
+(def last
+  (compose head reverse))
+
+(def init
+  (compose reverse (compose tail reverse)))
+
+(def concat
+  (fn [xs ys]
+    (if (empty? xs) ys
+      (concat (init xs) (cons (last xs) ys)))))
+
+(def range
+  (fn [m n]
+    (if (<= n m) '()
+      (cons m (range (inc m) n)))))
+
+(def partition
+  (fn [p xs]
+    (list (filter p xs) (filter (compose not p) xs))))
+
+(def qsort
+  (fn [xs]
+    (if (empty? xs) '()
+      (let [x (head xs)
+            part (partition (curry > x) (tail xs))
+            smaller (head part)
+            bigger (last part)]
+        (concat (qsort smaller) (concat (list x) (qsort bigger)))))))
+
+(def all
+  (fn [p xs]
+    (apply and (map p xs))))
+
+(def any
+  (fn [p xs]
+    (apply or (map p xs))))
+
+(def mapcat
+  (fn [f xs]
+    (let [ys (map f xs)]
+      (if (all list? ys)
+        (foldl concat '() ys)
+        ys))))
+

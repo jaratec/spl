@@ -7,5 +7,5 @@ The lisp can be run in sbt (with run command). Or can be run as a an application
 :load file_name
 :exit
 
-More information on how the lisp implementation was built: a [non-blog post](http://jaratec.github.io/2013/10/26/spl.html) and a [presentation](http://prezi.com/user/jaratec/).
+
 

@@ -224,11 +224,7 @@ class Interpreter {
                 // arity check -> number of actual arguments should match number of formal arguments
                 if (args.size != formals.size) LispNil() else {
                   val new_env = closure_env ++ formals.zip(args).toMap
-                  body match {
-                    //case LispLambda(_,_) => eval(new_env, eval(new_env,body))
-                    case LispLambda(_,_) => eval(new_env,body) // case where a function returns a function (ex: flip, curry, compose)
-                    case _ => eval(new_env,body) // normally a LispCall
-                  }
+                  eval(new_env,body)
                 }
               }
               // case where the expression e is not a closure, but a primitive function 

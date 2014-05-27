@@ -49,8 +49,8 @@ class LispParser extends JavaTokenParsers {
     case name ~ _ ~ e => LispBinding(name, e)
   }
 
-  def let: Parser[LispLet] = "(" ~> "let" ~> "[" ~ rep(binding) ~ "]" ~ funcall <~ ")" ^^ {
-    case "[" ~ bindings ~ "]" ~ call => LispLet(bindings, call)
+  def let: Parser[LispLet] = "(" ~> "let" ~> "[" ~ rep(binding) ~ "]" ~ expr <~ ")" ^^ {
+    case "[" ~ bindings ~ "]" ~ e => LispLet(bindings, e)
   }
 
   def gen: Parser[LispFor] = "(" ~> "for" ~> "[" ~ rep(binding) ~ opt(":if" ~> funcall) ~ ":yield" ~ expr ~ "]" <~ ")" ^^ {

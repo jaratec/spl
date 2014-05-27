@@ -7,6 +7,9 @@ class Interpreter {
   type Env = Map[LispId, LispExpr]
   val GLOBAL_ENV: Env = HashMap.empty[LispId, LispExpr]
 
+  bindToEnv(LispId("true"), LispBool(true))
+  bindToEnv(LispId("false"), LispBool(false))
+
   private case class LispClosure(val env: Env, val lambda: LispLambda) extends LispExpr {
   }
 

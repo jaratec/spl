@@ -6,10 +6,6 @@ class LispParser extends JavaTokenParsers {
 
   def id: Parser[LispId] = """[\p{Alnum}[<=>_!?+*/$#%&|.\-\^]]+""".r ^^ {name => LispId(name)}
 
-  def bool: Parser[LispBool] = ("true" ^^ {_ => LispBool(true)}
-                                | "false" ^^ {_ => LispBool(false)}
-                              )
-
   def char: Parser[LispChar] = "'" ~> """\p{Alnum}""".r <~ "'" ^^ {s => LispChar(s.head)}
 
   def string: Parser[LispString] = stringLiteral ^^ {s => LispString(s.init.tail)}
@@ -22,7 +18,7 @@ class LispParser extends JavaTokenParsers {
 
   def number: Parser[LispNumber] = decimal | integer
 
-  def atom: Parser[LispAtom] = number | bool | char | string | keyword | id
+  def atom: Parser[LispAtom] = number | char | string | keyword | id
 
   def expr: Parser[LispExpr] = atom | seq | lambda | let | gen | funcall
 

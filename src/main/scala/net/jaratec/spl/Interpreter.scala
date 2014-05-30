@@ -10,7 +10,7 @@ class Interpreter {
   private case class LispClosure(val env: Env, val lambda: LispLambda) extends LispExpr {
   }
 
-  val primitiveFunctions = List("head", "tail", "nil?", "atom?", "number?", "=", "<" , "<=", ">", ">=", "and", "or", "if", "cons", "+", "-", "*", "/", "mod", "rem", "size", "empty?", "list?", "map?", "put", "remove", "get", "keys", "union", "diff", "intersect", "list", "apply", "type")
+  val primitiveFunctions = List("head", "tail", "nil?", "atom?", "number?", "=", "<" , "<=", ">", ">=", "and", "or", "cons", "+", "-", "*", "/", "mod", "rem", "size", "empty?", "list?", "map?", "put", "remove", "get", "keys", "union", "diff", "intersect", "list", "apply", "type")
 
   def applyFunction(env: Env, fname: String, args: List[LispExpr]): LispExpr = {
     fname match {
@@ -62,10 +62,6 @@ class Interpreter {
       case "or" => if (args.size < 2) LispNil() else args.map{eval(env,_)} match {
         case bools: List[LispBool] => bools.foldLeft(LispBool(false)){_ || _}
         case _ => LispNil() // not a list of boolean expressions
-      }
-      case "if" => if (args.size < 2 || args.size > 3) LispNil() else eval(env,args.head) match {
-        case LispBool(true) => eval(env,args.tail.head)
-        case _ => if (args.size == 3) eval(env,args.last) else LispNil()
       }
       case "cons" => if (args.size != 2) LispNil() else eval(env,args.last) match {
         case LispList(elements) => LispList(eval(env,args.head) :: elements)
@@ -185,6 +181,7 @@ class Interpreter {
         case LispLambda(_,_) => LispId("lambda/function")
         case LispCall(_,_) => LispId("function call")
         case LispClosure(_,_) => LispId("closure")
+        case LispIf(_,_,_) => LispId("if expression")
         case LispLet(_,_) => LispId("let expression")
         case LispFor(_,_,_) => LispId("for comprehension")
         case _ => LispId("unknown/other")
@@ -233,6 +230,15 @@ class Interpreter {
               case LispId(name) if (primitiveFunctions.contains(name)) => applyFunction(env, name, actuals)
               case _ => LispNil() // error: neither a closure, nor a primitive function
             }
+          }
+        }
+      }
+      case LispIf(condition, thenBody, elseBody) => {
+        eval(env, condition) match {
+          case LispBool(true) => eval(env, thenBody)
+          case _ => elseBody match {
+            case Some(b) => eval(env, b)
+            case _ =>  LispNil()
           }
         }
       }

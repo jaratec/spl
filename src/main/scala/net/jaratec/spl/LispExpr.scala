@@ -149,6 +149,10 @@ case class LispBinding(val id: LispId, val e: LispExpr) extends LispExpr {
   override def toString(): String = id + " <- " + e
 }
 
+case class LispIf(val condition: LispExpr, val thenBody: LispExpr, val elseBody: Option[LispExpr]) extends LispExpr {
+  override def toString(): String = "(if " + condition + " " + thenBody + " " + elseBody + ")"
+}
+
 case class LispLet(val bindings: List[LispBinding], val body: LispExpr) extends LispExpr {
   override def toString(): String = "(let [" + bindings.mkString(" ") + "] " + body + ")"
 }

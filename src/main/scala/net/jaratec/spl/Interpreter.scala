@@ -7,10 +7,17 @@ class Interpreter {
   type Env = Map[LispId, LispExpr]
   val GLOBAL_ENV: Env = HashMap.empty[LispId, LispExpr]
 
+  bindToEnv(LispId("true"), LispBool(true))
+  bindToEnv(LispId("false"), LispBool(false))
+
   private case class LispClosure(val env: Env, val lambda: LispLambda) extends LispExpr {
   }
 
   val primitiveFunctions = List("head", "tail", "nil?", "atom?", "number?", "=", "<" , "<=", ">", ">=", "and", "or", "cons", "+", "-", "*", "/", "mod", "rem", "size", "empty?", "list?", "map?", "put", "remove", "get", "keys", "union", "diff", "intersect", "list", "apply", "type")
+
+  val primitiveAtoms = List("true", "false")
+
+  def bindsPrimitive(b: LispBinding) = primitiveAtoms.contains(b.id.id)
 
   def applyFunction(env: Env, fname: String, args: List[LispExpr]): LispExpr = {
     fname match {
@@ -243,6 +250,7 @@ class Interpreter {
         }
       }
       case LispLet(bindings, body) => {
+        if (bindings.exists(bindsPrimitive)) throw new RuntimeException("Attempt to bind primitive")
         val new_env = bindings.foldLeft(env){(acc_env,bind) => acc_env + (bind.id -> eval(acc_env,bind.e))}
         eval(new_env,body)
       }

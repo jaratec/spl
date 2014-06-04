@@ -15,6 +15,10 @@ class Interpreter {
 
   val primitiveFunctions = List("head", "tail", "nil?", "atom?", "number?", "=", "<" , "<=", ">", ">=", "and", "or", "if", "cons", "+", "-", "*", "/", "mod", "rem", "size", "empty?", "list?", "map?", "put", "remove", "get", "keys", "union", "diff", "intersect", "list", "apply", "type")
 
+  val primitiveAtoms = List("true", "false")
+
+  def bindsPrimitive(b: LispBinding) = primitiveAtoms.contains(b.id.id)
+
   def applyFunction(env: Env, fname: String, args: List[LispExpr]): LispExpr = {
     fname match {
       case "head" => if (args.size != 1) LispNil() else eval(env,args.head) match {
@@ -240,6 +244,7 @@ class Interpreter {
         }
       }
       case LispLet(bindings, body) => {
+        if (bindings.exists(bindsPrimitive)) throw new RuntimeException("Attempt to bind primitive")
         val new_env = bindings.foldLeft(env){(acc_env,bind) => acc_env + (bind.id -> eval(acc_env,bind.e))}
         eval(new_env,body)
       }

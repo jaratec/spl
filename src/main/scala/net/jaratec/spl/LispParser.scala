@@ -24,7 +24,7 @@ class LispParser extends JavaTokenParsers {
 
   def atom: Parser[LispAtom] = number | bool | char | string | keyword | id
 
-  def expr: Parser[LispExpr] = atom | seq | lambda | `if` | let | gen | funcall
+  def expr: Parser[LispExpr] = atom | seq | lambda | cond | let | gen | funcall
 
   def entry: Parser[LispEntry] = keyword ~ expr ^^ {
     case key ~ value => LispEntry(key, value)
@@ -49,7 +49,7 @@ class LispParser extends JavaTokenParsers {
     case name ~ _ ~ e => LispBinding(name, e)
   }
 
-  def `if`: Parser[LispIf] = "(" ~> "if" ~> expr ~ expr ~ opt(expr) <~ ")" ^^ {
+  def cond: Parser[LispIf] = "(" ~> "if" ~> expr ~ expr ~ opt(expr) <~ ")" ^^ {
     case condition ~ thenBody ~ elseBody => LispIf(condition, thenBody, elseBody)
   }
 

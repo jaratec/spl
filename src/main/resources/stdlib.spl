@@ -1,7 +1,7 @@
 
 (def not
   (fn [x]
-    (if x false true)))
+    (if x #f #t)))
 
 (def id
   (fn [x] x))

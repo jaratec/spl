@@ -4,10 +4,10 @@ import scala.util.parsing.combinator._
 
 class LispParser extends JavaTokenParsers {
 
-  def id: Parser[LispId] = """[\p{Alnum}[<=>_!?+*/$#%&|.\-\^]]+""".r ^^ {name => LispId(name)}
+  def id: Parser[LispId] = """[\p{Alnum}[<=>_!?+*/$%&|.\-\^]]+""".r ^^ {name => LispId(name)}
 
-  def bool: Parser[LispBool] = ("true" ^^ {_ => LispBool(true)}
-                                | "false" ^^ {_ => LispBool(false)}
+  def bool: Parser[LispBool] = ("#t" ^^ {_ => LispBool(true)}
+                                | "#f" ^^ {_ => LispBool(false)}
                               )
 
   def char: Parser[LispChar] = "'" ~> """\p{Alnum}""".r <~ "'" ^^ {s => LispChar(s.head)}

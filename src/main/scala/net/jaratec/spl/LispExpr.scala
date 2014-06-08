@@ -20,7 +20,7 @@ trait LispAtom extends LispExpr {
 case class LispBool(val b: Boolean) extends LispAtom {
   def &&(other: LispBool) = LispBool(b && other.b)
   def ||(other: LispBool) = LispBool(b || other.b)
-  override def toString(): String = if (b) "true" else "false"
+  override def toString(): String = if (b) "#t" else "#f"
 }
 
 abstract trait LispNumber extends LispAtom with Ordered[LispNumber] {
